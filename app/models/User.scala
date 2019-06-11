@@ -15,6 +15,7 @@ import scala.util.{ Failure, Success, Try }
  * @param firstName Maybe the first name of the authenticated user.
  * @param lastName Maybe the last name of the authenticated user.
  * @param fullName Maybe the full name of the authenticated user.
+ * @param address Maybe the address of the authenticated user.
  * @param email Maybe the email of the authenticated provider.
  * @param avatarURL Maybe the avatar URL of the authenticated provider.
  * @param activated Indicates that the user has activated its registration.
@@ -25,7 +26,9 @@ case class User(
   firstName: Option[String],
   lastName: Option[String],
   fullName: Option[String],
+  address: Option[String],
   email: Option[String],
+  isAdmin: Boolean,
   avatarURL: Option[String],
   activated: Boolean) extends Identity {
 
@@ -63,6 +66,8 @@ object User {
         "email" -> user.email,
         "firstName" -> user.firstName,
         "lastName" -> user.lastName,
+        "address" -> user.address,
+        "isAdmin" -> user.isAdmin,
         "avatarURL" -> user.avatarURL,
         "activated" -> user.activated
       )
@@ -81,6 +86,8 @@ object User {
           val email = (user \ "email").asOpt[String]
           val firstName = (user \ "firstName").asOpt[String]
           val lastName = (user \ "lastName").asOpt[String]
+          val address = (user \ "address").asOpt[String]
+          val isAdmin = (user \ "isAdmin").as[Boolean]
           val avatarURL = (user \ "avatarURL").asOpt[String]
           val activated = (user \ "activated").as[Boolean]
 
@@ -92,6 +99,8 @@ object User {
               email,
               firstName,
               lastName,
+              address,
+              isAdmin,
               avatarURL,
               activated
             )

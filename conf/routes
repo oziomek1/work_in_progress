@@ -48,7 +48,7 @@ POST        /products/delete/:id             controllers.ProductsController.dele
 
 GET         /orders                          controllers.OrdersController.getOrders
 GET         /orders/:id                      controllers.OrdersController.getOrderById(id: Long)
-GET         /orders/byUser/:id               controllers.OrdersController.getOrderByUser(id: Long)
+GET         /orders/byUser/:id               controllers.OrdersController.getOrderByUser(id: String)
 POST        /orders/add                      controllers.OrdersController.addOrder
 POST        /orders/delete/:id               controllers.OrdersController.deleteOrder(id: Long)
 PUT         /orders/edit/:id                 controllers.OrdersController.editOrder(id: Long)

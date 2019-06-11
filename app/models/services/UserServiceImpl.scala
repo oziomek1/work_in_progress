@@ -68,6 +68,8 @@ class UserServiceImpl @Inject() (userDAO: UserDAO)(implicit ex: ExecutionContext
           lastName = profile.lastName,
           fullName = profile.fullName,
           email = profile.email,
+          address = Option(""),
+          isAdmin = false,
           avatarURL = profile.avatarURL,
           activated = true
         ))

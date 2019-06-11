@@ -53,11 +53,7 @@ class ApplicationController @Inject() (
    * @return The result to display.
    */
   def user = silhouette.SecuredAction.async { implicit request =>
-    val usr = request.identity
-    //    val obj = scala.collection.mutable.HashMap(
-    //      "userID" -> usr.userID, "loginInfo" -> usr.loginInfo
-    //    )
-    Future.successful(Ok(Json.toJson(usr)))
+    Future.successful(Ok(Json.toJson(request.identity)))
   }
 
 }

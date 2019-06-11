@@ -24,7 +24,7 @@ class OrdersDAO @Inject() (dbConfigProvider: DatabaseConfigProvider, val usersDA
     orders.filter(_.orderID === id).result
   }
 
-  def create(userID: Long, address: String, date: String, shipped: Boolean = false): Future[Orders] = db.run {
+  def create(userID: String, address: String, date: String, shipped: Boolean = false): Future[Orders] = db.run {
     (orders.map(o => (o.userID, o.orderAddress, o.orderDate, o.orderShipped))
       returning orders.map(_.orderID)
       into {
@@ -37,13 +37,13 @@ class OrdersDAO @Inject() (dbConfigProvider: DatabaseConfigProvider, val usersDA
     orders.filter(_.orderID === orderID).delete
   }
 
-  def update(orderID: Long, userID: Long, orderAddress: String, orderDate: String, orderShipped: Boolean) = db.run {
+  def update(orderID: Long, userID: String, orderAddress: String, orderDate: String, orderShipped: Boolean) = db.run {
     orders.filter(_.orderID === orderID)
       .map(ord => (ord.userID, ord.orderAddress, ord.orderDate, ord.orderShipped))
       .update((userID, orderAddress, orderDate, orderShipped))
   }
 
-  def getByUserId(userId: Long): Future[Seq[Orders]] = db.run {
+  def getByUserId(userId: String): Future[Seq[Orders]] = db.run {
     orders.filter(_.userID === userId).result
   }
 
@@ -52,7 +52,7 @@ class OrdersDAO @Inject() (dbConfigProvider: DatabaseConfigProvider, val usersDA
     def orderAddress = column[String]("orderAddress")
     def orderDate = column[String]("orderDate")
     def orderShipped = column[Boolean]("orderShipped")
-    def userID = column[Long]("userID")
+    def userID = column[String]("userID")
 
     def * = (orderID, userID, orderAddress, orderDate, orderShipped) <> ((Orders.apply _).tupled, Orders.unapply)
   }

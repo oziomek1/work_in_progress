@@ -1,8 +1,8 @@
 package controllers
 
 import java.util.UUID
-import javax.inject.Inject
 
+import javax.inject.Inject
 import com.mohiva.play.silhouette.api._
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.services.AvatarService
@@ -10,6 +10,7 @@ import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
 import com.mohiva.play.silhouette.impl.providers._
 import forms.SignUpForm
 import models.User
+import models.daos.UsersDAO
 import models.services.{ AuthTokenService, UserService }
 import org.webjars.play.WebJarsUtil
 import play.api.i18n.{ I18nSupport, Messages }
@@ -18,7 +19,8 @@ import play.api.libs.json.Json
 import play.api.mvc.{ AbstractController, AnyContent, ControllerComponents, Request }
 import utils.auth.DefaultEnv
 
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.duration.Duration
+import scala.concurrent.{ Await, ExecutionContext, Future }
 
 /**
  * The `Sign Up` controller.
@@ -39,6 +41,7 @@ class SignUpController @Inject() (
   components: ControllerComponents,
   silhouette: Silhouette[DefaultEnv],
   userService: UserService,
+  usersDAO: UsersDAO,
   authInfoRepository: AuthInfoRepository,
   authTokenService: AuthTokenService,
   avatarService: AvatarService,
@@ -79,13 +82,23 @@ class SignUpController @Inject() (
             firstName = Some(data.firstName),
             lastName = Some(data.lastName),
             fullName = Some(data.firstName + " " + data.lastName),
+            address = Some(data.address),
             email = Some(data.email),
+            isAdmin = true,
             avatarURL = None,
             activated = true
           )
           for {
             avatar <- avatarService.retrieveURL(data.email)
             user <- userService.save(user.copy(avatarURL = avatar))
+
+            socialID = loginInfo.providerKey
+            email = data.email
+            firstName = data.firstName
+            lastName = data.lastName
+            address = data.address
+            usr <- storeNewUserData(socialID, email, firstName, lastName)
+
             authInfo <- authInfoRepository.add(loginInfo, authInfo)
             authenticator <- silhouette.env.authenticatorService.create(loginInfo)
             token <- silhouette.env.authenticatorService.init(authenticator)
@@ -99,5 +112,20 @@ class SignUpController @Inject() (
       case error =>
         Future.successful(Unauthorized(Json.obj("message" -> Messages("invalid.data"))))
     }
+  }
+
+  def storeNewUserData(socialID: String, email: String, firstName: String, lastName: String): Future[String] = {
+    var existingUserSocialID = Seq[String]()
+    val existingUsers = usersDAO.getBySocialID(socialID)
+    existingUsers.map { existingUsers =>
+      for (user <- existingUsers) {
+        existingUserSocialID = existingUserSocialID :+ user.userSocialID.get
+      }
+    }
+    Await.ready(existingUsers, Duration.Inf)
+    if (!existingUserSocialID.contains(socialID)) {
+      usersDAO.create(Some(socialID), email, firstName, lastName, None, None, true)
+    }
+    Future(socialID)
   }
 }

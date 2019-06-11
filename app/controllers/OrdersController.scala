@@ -30,7 +30,7 @@ class OrdersController @Inject() (
     }
   }
 
-  def getOrderByUser(id: Long) = Action.async { implicit request =>
+  def getOrderByUser(id: String) = Action.async { implicit request =>
     ordersDAO.getByUserId(id).map { order =>
       Ok(Json.toJson(order))
     }
@@ -43,7 +43,7 @@ class OrdersController @Inject() (
   }
 
   def addOrder = Action.async { implicit request =>
-    val userID = request.body.asJson.get("userID").as[Long]
+    val userID = request.body.asJson.get("userID").as[String]
     val orderAddress = request.body.asJson.get("orderAddress").as[String]
     val productQuantity = request.body.asJson.get("productQuantity").as[Int]
     val productID = request.body.asJson.get("productID").as[Long]
@@ -59,7 +59,7 @@ class OrdersController @Inject() (
   }
 
   def editOrder(id: Long) = Action.async { implicit request =>
-    val userID = request.body.asJson.get("userID").as[Long]
+    val userID = request.body.asJson.get("userID").as[String]
     val orderAddress = request.body.asJson.get("orderAddress").as[String]
     val productQuantity = request.body.asJson.get("productQuantity").as[Int]
     val productID = request.body.asJson.get("productID").as[Long]

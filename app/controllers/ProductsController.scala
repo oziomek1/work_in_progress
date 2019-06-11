@@ -40,11 +40,12 @@ class ProductsController @Inject() (
   def addProduct = Action.async { implicit request =>
     val productName = request.body.asJson.get("productName").as[String]
     val productDescription = request.body.asJson.get("productDescription").as[String]
+    val productImageURL = request.body.asJson.get("productImageURL").as[String]
     val categoryID = request.body.asJson.get("categoryID").as[Long]
     val productPriceNet = request.body.asJson.get("productPriceNet").as[Double]
     val productPriceGross = request.body.asJson.get("productPriceGross").as[Double]
 
-    productsDAO.create(productName, productDescription, categoryID, productPriceNet, productPriceGross).map {
+    productsDAO.create(productName, productDescription, productImageURL, categoryID, productPriceNet, productPriceGross).map {
       product => Ok(Json.toJson(product))
     }
   }
@@ -52,10 +53,11 @@ class ProductsController @Inject() (
   def editProduct(id: Long) = Action.async { implicit request =>
     val productName = request.body.asJson.get("productName").as[String]
     val productDescription = request.body.asJson.get("productDescription").as[String]
+    val productImageURL = request.body.asJson.get("productImageURL").as[String]
     val productPriceNet = request.body.asJson.get("productPriceNet").as[Double]
     val productPriceGross = request.body.asJson.get("productPriceGross").as[Double]
     val categoryID = request.body.asJson.get("categoryID").as[Long]
-    productsDAO.update(id, productName, productDescription, productPriceNet, productPriceGross, categoryID).map { product =>
+    productsDAO.update(id, productName, productDescription, categoryID, productImageURL, productPriceNet, productPriceGross).map { product =>
       Ok(Json.toJson(product))
     }
   }

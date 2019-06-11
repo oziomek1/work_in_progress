@@ -15,7 +15,7 @@ class CategoriesController @Inject() (
   silhouette: Silhouette[DefaultEnv])(implicit ec: ExecutionContext)
   extends MessagesAbstractController(cc) {
 
-  def getCategories = silhouette.SecuredAction.async { implicit request =>
+  def getCategories = Action.async { implicit request =>
     categoriesDAO.all().map { categories =>
       Ok(Json.toJson(categories))
     }

@@ -4,7 +4,7 @@ import play.api.libs.json._
 
 case class Orders(
   orderID: Long,
-  userID: Long,
+  userID: String,
   orderAddress: String,
   orderDate: String,
   orderShipped: Boolean)

@@ -6,6 +6,7 @@ case class Products(
   productID: Long,
   productName: String,
   productDescription: String,
+  productImageURL: String,
   categoryID: Long,
   productPriceNet: Double,
   productPriceGross: Double)
