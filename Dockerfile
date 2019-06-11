@@ -38,6 +38,8 @@ VOLUME ["/home/directory/"]
 
 WORKDIR /home/directory
 
+RUN sqlite3 shop_scala.sqlite < shop_scala.sql
+
 ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
 
 RUN useradd oziomek --create-home
